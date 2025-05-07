@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 
 
 private lateinit var notificationManager: NotificationManager
@@ -29,6 +30,7 @@ object NotificationHelper {
 
 
     fun sendNotification(context: Context, fileName: String, status: String, channelId: String) {
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val detailIntent = Intent(context, DetailActivity::class.java).apply {
             putExtra("FILE_NAME", fileName)
             putExtra("STATUS", status)
@@ -45,6 +47,12 @@ object NotificationHelper {
             .setSmallIcon(R.drawable.ic_assistant_black_24dp)
             .setContentTitle(context.getString(R.string.notification_title))
             .setContentText(context.getString(R.string.notification_description))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(context.getString(R.string.notification_description))
+            )
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .addAction(R.drawable.ic_assistant_black_24dp, context.getString(R.string.notification_button), pendingIntent)
