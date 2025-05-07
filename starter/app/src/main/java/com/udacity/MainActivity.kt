@@ -9,8 +9,11 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.udacity.databinding.ActivityMainBinding
 import timber.log.Timber
@@ -22,18 +25,26 @@ class MainActivity : AppCompatActivity() {
     private var selectedUrl: String? = null
     private var selectedRepoName: String = ""
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        NotificationHelper.setupChannel(this, "CHANNEL_ID")
+        this.setSystemBars()
 
+        NotificationHelper.setupChannel(this, CHANNEL_ID)
+
+        registerTheReceiver()
+
+        setupListeners()
+    }
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private fun registerTheReceiver() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
-//            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
 
             registerReceiver(
                 receiver,
@@ -46,9 +57,6 @@ class MainActivity : AppCompatActivity() {
                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
             )
         }
-
-
-        setupListeners()
     }
 
     private fun setupListeners() {
@@ -98,6 +106,8 @@ class MainActivity : AppCompatActivity() {
                 .setRequiresCharging(false)
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${selectedRepoName}.zip")
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as? DownloadManager
 
