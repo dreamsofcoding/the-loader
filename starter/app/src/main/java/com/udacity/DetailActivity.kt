@@ -14,6 +14,8 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        this.plantTimber()
+
         this.setSystemBars()
     }
 }

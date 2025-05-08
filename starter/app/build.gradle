@@ -34,7 +34,7 @@ android {
             resValue("string", "app_name", "Loader App Dev")
         }
     }
-    // Enables data binding.
+
     buildFeatures {
         dataBinding true
         viewBinding true

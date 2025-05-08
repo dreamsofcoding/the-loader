@@ -1,21 +1,21 @@
 package com.udacity
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.view.View
-import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import com.udacity.databinding.ActivityMainBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -31,32 +31,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
+        }
+
+        this.plantTimber()
+
         this.setSystemBars()
 
         NotificationHelper.setupChannel(this, CHANNEL_ID)
 
-        registerTheReceiver()
-
         setupListeners()
-    }
-
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private fun registerTheReceiver() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
-
-            registerReceiver(
-                receiver,
-                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                RECEIVER_NOT_EXPORTED
-            )
-        } else {
-            registerReceiver(
-                receiver,
-                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-            )
-        }
     }
 
     private fun setupListeners() {
@@ -66,10 +51,12 @@ class MainActivity : AppCompatActivity() {
                     selectedUrl = URL_GLIDE
                     selectedRepoName = "Glide"
                 }
+
                 R.id.radio_loadapp -> {
                     selectedUrl = URL_LOAD_APP
                     selectedRepoName = "LoadApp"
                 }
+
                 R.id.radio_retrofit -> {
                     selectedUrl = URL_RETROFIT
                     selectedRepoName = "Retrofit"
@@ -87,32 +74,60 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            if (id == downloadID) {
-                Timber.d("Sending notification for: $selectedRepoName")
-                NotificationHelper.sendNotification(this@MainActivity, selectedRepoName, "Success", CHANNEL_ID)
-                binding.mainContentLayout.customButton.buttonState = ButtonState.Completed
-            }
-        }
-    }
-
+    @SuppressLint("Range")
     private fun download() {
         try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    1002
+                )
+            }
+
             val request = DownloadManager.Request(selectedUrl?.toUri())
                 .setTitle(getString(R.string.app_name))
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${selectedRepoName}.zip")
+                .setDestinationInExternalFilesDir(
+                    this,
+                    Environment.DIRECTORY_DOWNLOADS,
+                    "${selectedRepoName}.zip"
+                )
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as? DownloadManager
-
             if (downloadManager != null) {
                 downloadID = downloadManager.enqueue(request)
+
+                val prefs = getSharedPreferences("download_prefs", MODE_PRIVATE)
+                prefs.edit { putString(downloadID.toString(), selectedRepoName) }
+
+                lifecycleScope.launch {
+                    while (true) {
+                        val query = DownloadManager.Query().setFilterById(downloadID)
+                        val cursor = downloadManager.query(query)
+                        var completed = false
+
+                        cursor?.use {
+                            if (it.moveToFirst()) {
+                                val statusIndex = it.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                                val statusCode = it.getInt(statusIndex)
+                                when (statusCode) {
+                                    DownloadManager.STATUS_SUCCESSFUL, DownloadManager.STATUS_FAILED -> {
+                                        updateButtonOnDownloadComplete()
+                                        completed = true
+                                    }
+                                }
+                            }
+                        }
+
+                        if (completed) break
+                        delay(1000L)
+                    }
+                }
 
                 Timber.d("Download started with ID: $downloadID")
             } else {
@@ -128,15 +143,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(receiver)
+    private fun updateButtonOnDownloadComplete() {
+        binding.mainContentLayout.customButton.buttonState = ButtonState.Completed
     }
 
+
     companion object {
-        const val URL_GLIDE = "https://github.com/bumptech/glide/archive/master.zip"
-        const val URL_LOAD_APP = "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        const val URL_RETROFIT = "https://github.com/square/retrofit/archive/master.zip"
-        private const val CHANNEL_ID = "download_channel"
+        const val URL_GLIDE = "https://github.com/bumptech/glide/archive/refs/heads/master.zip"
+        const val URL_LOAD_APP =
+            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        const val URL_RETROFIT = "https://github.com/square/retrofit/archive/refs/heads/trunk.zip"
+        const val CHANNEL_ID = "download_channel"
     }
 }
+

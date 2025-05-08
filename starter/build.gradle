@@ -5,7 +5,7 @@ buildscript {
         version_appcompat = "1.7.0"
         version_constraint_layout = "2.2.1"
         version_core = "1.16.0"
-        version_gradle = "8.9.2"
+        version_gradle = '8.10.0'
         version_kotlin = "2.1.20"
         version_kotlin_serialisation = "1.8.0"
         version_lifecycle = "2.8.7"
