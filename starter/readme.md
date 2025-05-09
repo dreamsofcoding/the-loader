@@ -1,27 +1,28 @@
 # LoadApp
 
-In this project students will create an app to download a file from Internet by clicking on a custom-built button where:
-- width of the button gets animated from left to right;
-- text gets changed based on different states of the button;
-- circle gets be animated from 0 to 360 degrees
+Android Download Manager ProjectLoadApp is a polished Android project built to demonstrate key concepts in custom UI, system notifications, file downloads, and animation using MotionLayout. This app allows users to select a repository (or enter a custom URL) and download a zip file using Android's DownloadManager. It includes real-time UI feedback via a custom loading button, system notifications, and animated transitions.
 
-A notification will be sent once the download is complete. When a user clicks on notification, the user lands on detail activity and the notification gets dismissed. In detail activity, the status of the download will be displayed and animated via MotionLayout upon opening the activity.
+# Features
+ Custom Download Button: Built with a custom View and Canvas, animating width and showing circular progress.
+ Repository Selector: RadioGroup for selecting predefined repos (Glide, Retrofit, LoadApp) or entering a custom URL.
+ Download via DownloadManager: Background downloading using system services, with real-time completion checks.
+ System Notification: Shows download status with tap-to-view action and custom design.
+ DetailActivity: Displays download status and selected repo name. Animates in with MotionLayout.
 
-[The final look of the app](https://gph.is/g/Zywmnre)
+# Tech StackKotlin + Coroutines
+Custom View (Canvas drawing)
+DownloadManager
+NotificationManager
+MotionLayout
 
+# How to Run
+ Clone the repo
+ Open in Android Studio
+ Run on emulator or physical device (ensure storage + notification permissions are granted)
 
-## Getting Started
+# Notes
+ Compatible with Android API 28+
+ Tested on Android 11+ with scoped storage
 
-Instructions for how to get a copy of the project running on your local machine.
-
-### Dependencies
-
-```
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.core:core-ktx:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-```
+# License
+ This project is intended for educational purposes only as part of the Udacity Advanced Android Developer Nanodegree.
