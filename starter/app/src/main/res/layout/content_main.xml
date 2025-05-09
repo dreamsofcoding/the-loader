@@ -33,19 +33,19 @@
             android:id="@+id/radio_glide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Glide - Image Loading Library by BumpTech" />
+            android:text="@string/radio_option_glide" />
 
         <RadioButton
             android:id="@+id/radio_loadapp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LoadApp - Current repository by Udacity" />
+            android:text="@string/radio_option_loadapp" />
 
         <RadioButton
             android:id="@+id/radio_retrofit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Retrofit - HTTP Client for Android by Square, Inc." />
+            android:text="@string/radio_option_retrofit" />
     </RadioGroup>
 
     <com.udacity.LoadingButton

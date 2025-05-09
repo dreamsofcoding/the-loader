@@ -5,13 +5,21 @@
 
 
     <string name="notification_title">LoaderApp</string>
-    <string name="notification_description">The file has downloaded</string>
+    <string name="notification_description_success">The file has downloaded</string>
+    <string name="notification_description_failed">The file did not download</string>
     <string name="notification_button">Check the status</string>
 
     <string name="button_name">Click me</string>
     <string name="button_loading">We are loading </string>
-    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_detail">Details</string>
 
     <string name="select_option">Please select a file to download</string>
+
+    <string name="radio_option_glide">Glide - Image Loading Library by BumpTech</string>
+    <string name="radio_option_loadapp">LoadApp - Current repository by Udacity</string>
+    <string name="radio_option_retrofit">Retrofit - HTTP Client for Android by Square, Inc.</string>
+
+    <string name="filename_label">File name:</string>
+    <string name="status_label">Status:</string>
 
 </resources>

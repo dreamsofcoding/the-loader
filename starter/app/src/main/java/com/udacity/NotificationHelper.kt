@@ -9,6 +9,9 @@ import android.widget.RemoteViews
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.udacity.Constants.FILE_NAME
+import com.udacity.Constants.STATUS
+import com.udacity.Constants.SUCCESS
 import kotlinx.serialization.StringFormat
 
 
@@ -38,8 +41,8 @@ object NotificationHelper {
 
 
         val detailIntent = Intent(context, DetailActivity::class.java).apply {
-            putExtra("FILE_NAME", fileName)
-            putExtra("STATUS", status)
+            putExtra(FILE_NAME, fileName)
+            putExtra(STATUS, status)
         }
 
         pendingIntent = PendingIntent.getActivity(
@@ -52,7 +55,7 @@ object NotificationHelper {
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_assistant_black_24dp)
             .setContentTitle(context.getString(R.string.notification_title))
-            .setContentText(context.getString(R.string.notification_description))
+            .setContentText(context.getString(if(status == SUCCESS)R.string.notification_description_success else R.string.notification_description_failed))
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
             .setPriority(NotificationCompat.PRIORITY_HIGH)

@@ -3,7 +3,6 @@ package com.udacity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -13,6 +12,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import com.udacity.Constants.DOWNLOAD_PREFS
+import com.udacity.Constants.GLIDE
+import com.udacity.Constants.LOADAPP
+import com.udacity.Constants.RETROFIT
 import com.udacity.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,17 +52,17 @@ class MainActivity : AppCompatActivity() {
             when (checkedId) {
                 R.id.radio_glide -> {
                     selectedUrl = URL_GLIDE
-                    selectedRepoName = "Glide"
+                    selectedRepoName = GLIDE
                 }
 
                 R.id.radio_loadapp -> {
                     selectedUrl = URL_LOAD_APP
-                    selectedRepoName = "LoadApp"
+                    selectedRepoName = LOADAPP
                 }
 
                 R.id.radio_retrofit -> {
                     selectedUrl = URL_RETROFIT
-                    selectedRepoName = "Retrofit"
+                    selectedRepoName = RETROFIT
                 }
             }
         }
@@ -102,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             if (downloadManager != null) {
                 downloadID = downloadManager.enqueue(request)
 
-                val prefs = getSharedPreferences("download_prefs", MODE_PRIVATE)
+                val prefs = getSharedPreferences(DOWNLOAD_PREFS, MODE_PRIVATE)
                 prefs.edit { putString(downloadID.toString(), selectedRepoName) }
 
                 lifecycleScope.launch {
