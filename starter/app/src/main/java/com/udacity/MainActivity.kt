@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import com.udacity.Constants.CHANNEL_ID
 import com.udacity.Constants.CUSTOM
 import com.udacity.Constants.DOWNLOAD_PREFS
 import com.udacity.Constants.GLIDE
@@ -20,6 +21,9 @@ import com.udacity.Constants.LOADAPP
 import com.udacity.Constants.REPO_NAME
 import com.udacity.Constants.REPO_URL
 import com.udacity.Constants.RETROFIT
+import com.udacity.Constants.URL_GLIDE
+import com.udacity.Constants.URL_LOADAPP
+import com.udacity.Constants.URL_RETROFIT
 import com.udacity.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     R.id.radio_loadapp -> {
-                        selectedUrl = URL_LOAD_APP
+                        selectedUrl = URL_LOADAPP
                         selectedRepoName = LOADAPP
                     }
 
@@ -174,15 +178,6 @@ class MainActivity : AppCompatActivity() {
         binding.mainContentLayout.customButton.animateToCompletion {
             binding.mainContentLayout.customButton.buttonState = ButtonState.Completed
         }
-    }
-
-
-    companion object {
-        const val URL_GLIDE = "https://github.com/bumptech/glide/archive/refs/heads/master.zip"
-        const val URL_LOAD_APP =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        const val URL_RETROFIT = "https://github.com/square/retrofit/archive/refs/heads/trunk.zip"
-        const val CHANNEL_ID = "download_channel"
     }
 }
 

@@ -10,6 +10,7 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.udacity.Constants.FILE_NAME
+import com.udacity.Constants.NOTIFICATION_ID
 import com.udacity.Constants.STATUS
 import com.udacity.Constants.SUCCESS
 import kotlinx.serialization.StringFormat
@@ -17,7 +18,6 @@ import kotlinx.serialization.StringFormat
 
 private lateinit var notificationManager: NotificationManager
 private lateinit var pendingIntent: PendingIntent
-private lateinit var action: NotificationCompat.Action
 
 object NotificationHelper {
 
@@ -34,7 +34,6 @@ object NotificationHelper {
 
     }
 
-
     fun sendNotification(context: Context, fileName: String, status: String, channelId: String) {
 
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -46,7 +45,7 @@ object NotificationHelper {
 
         pendingIntent = PendingIntent.getActivity(
             context,
-            0,
+            NOTIFICATION_ID,
             detailIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -61,6 +60,11 @@ object NotificationHelper {
             .setAutoCancel(true)
             .addAction(R.drawable.ic_assistant_black_24dp, context.getString(R.string.notification_button), pendingIntent)
 
-        notificationManager.notify(0, builder.build())
+        notificationManager.notify(NOTIFICATION_ID, builder.build())
+    }
+
+    fun dismissNotification(context: Context) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 }

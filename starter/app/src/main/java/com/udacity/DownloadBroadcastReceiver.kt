@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.udacity.Constants.CHANNEL_ID
 import com.udacity.Constants.DOWNLOAD_PREFS
 import com.udacity.Constants.FAILED
 import com.udacity.Constants.REPO_NAME
@@ -43,7 +44,7 @@ class DownloadBroadcastReceiver : BroadcastReceiver() {
             context = context,
             fileName = repoName,
             status = status,
-            channelId = MainActivity.CHANNEL_ID
+            channelId = CHANNEL_ID
         )
     }
 }

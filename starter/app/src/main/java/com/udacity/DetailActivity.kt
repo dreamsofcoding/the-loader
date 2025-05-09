@@ -3,7 +3,7 @@ package com.udacity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.system.Os.remove
+import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import com.udacity.Constants.CUSTOM
@@ -35,29 +35,55 @@ class DetailActivity : AppCompatActivity() {
 
         this.setSystemBars()
 
+        setViewVisibility()
+
         updateUIWithTheStatus(intent)
 
         setClickListener()
 
-        binding.motionLayout.transitionToEnd()
+        binding.detailContentLayout.motionLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.detailContentLayout.motionLayout.viewTreeObserver.removeOnGlobalLayoutListener(
+                    this
+                )
+                binding.detailContentLayout.motionLayout.progress = 0f
+                binding.detailContentLayout.motionLayout.postDelayed({
+                    binding.detailContentLayout.motionLayout.transitionToEnd()
+                }, 2500)
+            }
+        })
+
+        NotificationHelper.dismissNotification(this)
+
+    }
+
+    private fun setViewVisibility() {
+        binding.detailContentLayout.apply {
+            fileRow.alpha = 0f
+            statusRow.alpha = 0f
+            okButton.alpha = 0f
+        }
     }
 
     private fun updateUIWithTheStatus(intent: Intent) {
         downloadUrl = prefs.getString(REPO_URL, UNKNOWN)
 
-        binding.filenameText.text = when (intent.getStringExtra(FILE_NAME)) {
-            GLIDE -> binding.root.context.getString(R.string.radio_option_glide)
-            LOADAPP -> binding.root.context.getString(R.string.radio_option_loadapp)
-            RETROFIT -> binding.root.context.getString(R.string.radio_option_retrofit)
-            CUSTOM -> downloadUrl
-            else -> UNKNOWN
-        }
+        binding.detailContentLayout.apply {
+            filenameText.text = when (intent.getStringExtra(FILE_NAME)) {
+                GLIDE -> binding.root.context.getString(R.string.radio_option_glide)
+                LOADAPP -> binding.root.context.getString(R.string.radio_option_loadapp)
+                RETROFIT -> binding.root.context.getString(R.string.radio_option_retrofit)
+                CUSTOM -> downloadUrl
+                else -> UNKNOWN
+            }
 
-        binding.statusText.text = intent.getStringExtra(STATUS) ?: UNKNOWN
+            statusText.text = intent.getStringExtra(STATUS) ?: UNKNOWN
+        }
     }
 
     private fun setClickListener() {
-        binding.okButton.setOnClickListener {
+        binding.detailContentLayout.okButton.setOnClickListener {
             prefs.edit {
                 clear()
             }
