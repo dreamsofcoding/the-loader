@@ -21,8 +21,6 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
     private lateinit var prefs: SharedPreferences
-
-    private var downloadId = -1L
     private var downloadUrl: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,12 +38,14 @@ class DetailActivity : AppCompatActivity() {
         updateUIWithTheStatus(intent)
 
         setClickListener()
+
+        binding.motionLayout.transitionToEnd()
     }
 
     private fun updateUIWithTheStatus(intent: Intent) {
-        downloadUrl = prefs.getString(REPO_URL, "URL not available")
+        downloadUrl = prefs.getString(REPO_URL, UNKNOWN)
 
-        binding.detailContentLayout.filenameText.text = when (intent.getStringExtra(FILE_NAME)) {
+        binding.filenameText.text = when (intent.getStringExtra(FILE_NAME)) {
             GLIDE -> binding.root.context.getString(R.string.radio_option_glide)
             LOADAPP -> binding.root.context.getString(R.string.radio_option_loadapp)
             RETROFIT -> binding.root.context.getString(R.string.radio_option_retrofit)
@@ -53,11 +53,11 @@ class DetailActivity : AppCompatActivity() {
             else -> UNKNOWN
         }
 
-        binding.detailContentLayout.statusText.text = intent.getStringExtra(STATUS) ?: UNKNOWN
+        binding.statusText.text = intent.getStringExtra(STATUS) ?: UNKNOWN
     }
 
     private fun setClickListener() {
-        binding.detailContentLayout.okButton.setOnClickListener {
+        binding.okButton.setOnClickListener {
             prefs.edit {
                 clear()
             }
