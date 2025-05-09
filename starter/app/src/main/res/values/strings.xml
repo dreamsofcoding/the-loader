@@ -10,6 +10,7 @@
 
     <string name="button_name">Click me</string>
     <string name="button_loading">We are loading </string>
+    <string name="button_download">Download</string>
     <string name="title_activity_detail">Download Details</string>
 
     <string name="select_option">Please select a file to download</string>
@@ -17,6 +18,7 @@
     <string name="radio_option_glide">Glide - Image Loading Library by BumpTech</string>
     <string name="radio_option_loadapp">LoadApp - Current repository by Udacity</string>
     <string name="radio_option_retrofit">Retrofit - HTTP Client for Android by Square, Inc.</string>
+    <string name="radio_option_custom">Custom Url</string>
 
     <string name="filename_label">File name:</string>
     <string name="status_label">Status:</string>

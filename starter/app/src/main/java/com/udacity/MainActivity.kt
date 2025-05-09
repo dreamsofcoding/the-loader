@@ -5,21 +5,24 @@ import android.app.DownloadManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Patterns
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import com.udacity.Constants.CUSTOM
 import com.udacity.Constants.DOWNLOAD_PREFS
 import com.udacity.Constants.GLIDE
 import com.udacity.Constants.LOADAPP
+import com.udacity.Constants.REPO_NAME
+import com.udacity.Constants.REPO_URL
 import com.udacity.Constants.RETROFIT
 import com.udacity.databinding.ActivityMainBinding
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -50,25 +53,41 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.mainContentLayout.radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.radio_glide -> {
-                    selectedUrl = URL_GLIDE
-                    selectedRepoName = GLIDE
-                }
+            if (checkedId == R.id.radio_custom) {
+                binding.mainContentLayout.customUrlInput.visibility = View.VISIBLE
+            } else {
+                binding.mainContentLayout.customUrlInput.visibility = View.GONE
+                when (checkedId) {
+                    R.id.radio_glide -> {
+                        selectedUrl = URL_GLIDE
+                        selectedRepoName = GLIDE
+                    }
 
-                R.id.radio_loadapp -> {
-                    selectedUrl = URL_LOAD_APP
-                    selectedRepoName = LOADAPP
-                }
+                    R.id.radio_loadapp -> {
+                        selectedUrl = URL_LOAD_APP
+                        selectedRepoName = LOADAPP
+                    }
 
-                R.id.radio_retrofit -> {
-                    selectedUrl = URL_RETROFIT
-                    selectedRepoName = RETROFIT
+                    R.id.radio_retrofit -> {
+                        selectedUrl = URL_RETROFIT
+                        selectedRepoName = RETROFIT
+                    }
                 }
             }
         }
 
         binding.mainContentLayout.customButton.setOnClickListener {
+
+            if (binding.mainContentLayout.radioCustom.isChecked) {
+                val inputUrl = binding.mainContentLayout.customUrlInput.text.toString().trim()
+                if (inputUrl.isEmpty() || !Patterns.WEB_URL.matcher(inputUrl).matches()) {
+                    Toast.makeText(this, "Please enter a valid URL", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                selectedUrl = inputUrl
+                selectedRepoName = CUSTOM
+            }
+
             if (selectedUrl == null) {
                 Toast.makeText(this, getString(R.string.select_option), Toast.LENGTH_SHORT).show()
             } else {
@@ -106,37 +125,34 @@ class MainActivity : AppCompatActivity() {
                 downloadID = downloadManager.enqueue(request)
 
                 val prefs = getSharedPreferences(DOWNLOAD_PREFS, MODE_PRIVATE)
-                prefs.edit { putString(downloadID.toString(), selectedRepoName) }
+                prefs.edit {
+                    clear()
+                    putString(REPO_NAME, selectedRepoName)
+                    putString(REPO_URL, selectedUrl)
+                }
 
                 lifecycleScope.launch {
-                    try {
-                        withTimeout(10_000L) { // 10 seconds timeout
-                            while (true) {
-                                val query = DownloadManager.Query().setFilterById(downloadID)
-                                val cursor = downloadManager.query(query)
-                                var completed = false
+                    while (true) {
+                        val query = DownloadManager.Query().setFilterById(downloadID)
+                        val cursor = downloadManager.query(query)
+                        var completed = false
 
-                                cursor?.use {
-                                    if (it.moveToFirst()) {
-                                        val statusIndex = it.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                                        val statusCode = it.getInt(statusIndex)
-                                        when (statusCode) {
-                                            DownloadManager.STATUS_SUCCESSFUL,
-                                            DownloadManager.STATUS_FAILED -> {
-                                                updateButtonOnDownloadComplete()
-                                                completed = true
-                                            }
-                                        }
+                        cursor?.use {
+                            if (it.moveToFirst()) {
+                                val statusIndex = it.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                                val statusCode = it.getInt(statusIndex)
+                                when (statusCode) {
+                                    DownloadManager.STATUS_SUCCESSFUL,
+                                    DownloadManager.STATUS_FAILED -> {
+                                        updateButtonOnDownloadComplete()
+                                        completed = true
                                     }
                                 }
-
-                                if (completed) break
-                                delay(1000L)
                             }
                         }
-                    } catch (e: TimeoutCancellationException) {
-                        Timber.w("DownloadCheck Timeout after 10 seconds")
-                        updateButtonOnDownloadComplete()
+
+                        if (completed) break
+                        delay(1000L)
                     }
                 }
 
@@ -155,7 +171,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateButtonOnDownloadComplete() {
-        binding.mainContentLayout.customButton.buttonState = ButtonState.Completed
+        binding.mainContentLayout.customButton.animateToCompletion {
+            binding.mainContentLayout.customButton.buttonState = ButtonState.Completed
+        }
     }
 
 

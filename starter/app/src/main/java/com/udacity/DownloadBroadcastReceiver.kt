@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import com.udacity.Constants.DOWNLOAD_PREFS
 import com.udacity.Constants.FAILED
+import com.udacity.Constants.REPO_NAME
 import com.udacity.Constants.SUCCESS
 import com.udacity.Constants.UNKNOWN
 import timber.log.Timber
@@ -22,7 +23,7 @@ class DownloadBroadcastReceiver : BroadcastReceiver() {
         if (downloadId == -1L) return
 
         val prefs = context.getSharedPreferences(DOWNLOAD_PREFS, Context.MODE_PRIVATE)
-        repoName = prefs.getString(downloadId.toString(), UNKNOWN) ?: UNKNOWN
+        repoName = prefs.getString(REPO_NAME, UNKNOWN) ?: UNKNOWN
 
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val query = DownloadManager.Query().setFilterById(downloadId)

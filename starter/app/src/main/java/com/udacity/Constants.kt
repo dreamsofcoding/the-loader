@@ -4,6 +4,7 @@ object Constants {
     const val GLIDE = "Glide"
     const val LOADAPP = "LoadApp"
     const val RETROFIT = "Retrofit"
+    const val CUSTOM = "Custom"
 
     const val DOWNLOAD_PREFS = "download_prefs"
 
@@ -13,4 +14,7 @@ object Constants {
     const val SUCCESS = "Success"
     const val FAILED = "Failed"
     const val UNKNOWN = "Unknown"
+
+    const val REPO_NAME = "REPO_NAME"
+    const val REPO_URL = "REPO_URL"
 }
