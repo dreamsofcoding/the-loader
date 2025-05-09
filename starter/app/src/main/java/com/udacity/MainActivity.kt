@@ -1,7 +1,6 @@
 package com.udacity
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.os.Build
 import android.os.Bundle
@@ -17,8 +16,10 @@ import com.udacity.Constants.GLIDE
 import com.udacity.Constants.LOADAPP
 import com.udacity.Constants.RETROFIT
 import com.udacity.databinding.ActivityMainBinding
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -77,7 +78,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("Range")
     private fun download() {
         try {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
@@ -109,26 +109,34 @@ class MainActivity : AppCompatActivity() {
                 prefs.edit { putString(downloadID.toString(), selectedRepoName) }
 
                 lifecycleScope.launch {
-                    while (true) {
-                        val query = DownloadManager.Query().setFilterById(downloadID)
-                        val cursor = downloadManager.query(query)
-                        var completed = false
+                    try {
+                        withTimeout(10_000L) { // 10 seconds timeout
+                            while (true) {
+                                val query = DownloadManager.Query().setFilterById(downloadID)
+                                val cursor = downloadManager.query(query)
+                                var completed = false
 
-                        cursor?.use {
-                            if (it.moveToFirst()) {
-                                val statusIndex = it.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                                val statusCode = it.getInt(statusIndex)
-                                when (statusCode) {
-                                    DownloadManager.STATUS_SUCCESSFUL, DownloadManager.STATUS_FAILED -> {
-                                        updateButtonOnDownloadComplete()
-                                        completed = true
+                                cursor?.use {
+                                    if (it.moveToFirst()) {
+                                        val statusIndex = it.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                                        val statusCode = it.getInt(statusIndex)
+                                        when (statusCode) {
+                                            DownloadManager.STATUS_SUCCESSFUL,
+                                            DownloadManager.STATUS_FAILED -> {
+                                                updateButtonOnDownloadComplete()
+                                                completed = true
+                                            }
+                                        }
                                     }
                                 }
+
+                                if (completed) break
+                                delay(1000L)
                             }
                         }
-
-                        if (completed) break
-                        delay(1000L)
+                    } catch (e: TimeoutCancellationException) {
+                        Timber.w("DownloadCheck Timeout after 10 seconds")
+                        updateButtonOnDownloadComplete()
                     }
                 }
 

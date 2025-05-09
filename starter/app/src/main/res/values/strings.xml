@@ -3,7 +3,6 @@
     <string name="app_description">Download files from Internet</string>
     <string name="action_settings">Settings</string>
 
-
     <string name="notification_title">LoaderApp</string>
     <string name="notification_description_success">The file has downloaded</string>
     <string name="notification_description_failed">The file did not download</string>
@@ -11,7 +10,7 @@
 
     <string name="button_name">Click me</string>
     <string name="button_loading">We are loading </string>
-    <string name="title_activity_detail">Details</string>
+    <string name="title_activity_detail">Download Details</string>
 
     <string name="select_option">Please select a file to download</string>
 
@@ -21,5 +20,6 @@
 
     <string name="filename_label">File name:</string>
     <string name="status_label">Status:</string>
+    <string name="ok_button">OK</string>
 
 </resources>

@@ -39,7 +39,6 @@ object NotificationHelper {
 
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-
         val detailIntent = Intent(context, DetailActivity::class.java).apply {
             putExtra(FILE_NAME, fileName)
             putExtra(STATUS, status)
