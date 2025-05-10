@@ -73,6 +73,10 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_margin="20dp"
+        app:buttonTextColor="@color/white"
+        app:progressCircleColor="@color/main_button_circle"
+        app:buttonTextSize="@dimen/label_text_size"
+        app:buttonBackgroundColor="@color/main_button_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

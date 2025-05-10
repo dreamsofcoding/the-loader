@@ -2,10 +2,12 @@ package com.udacity
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -18,7 +20,11 @@ class LoadingButton @JvmOverloads constructor(
     private var textColor = R.color.white
     private var bgColor = R.color.main_button_bg
     private var circleColor = R.color.main_button_circle
-    private var labelTextSize = 40f
+    private var labelTextSize = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        R.dimen.label_text_size.toFloat(),
+        resources.displayMetrics
+    )
 
     private var widthSize = 0
     private var heightSize = 0
@@ -98,7 +104,7 @@ class LoadingButton @JvmOverloads constructor(
         val cy = heightSize / 2f
         val rectF = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
 
-        paint.color = ContextCompat.getColor(context, R.color.colorAccent)
+        paint.color = ContextCompat.getColor(context, R.color.main_button_circle)
         paint.style = Paint.Style.FILL
 
         canvas.drawArc(rectF, -90f, sweepAngle, true, paint)
