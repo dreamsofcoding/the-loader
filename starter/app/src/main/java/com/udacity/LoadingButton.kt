@@ -4,7 +4,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
@@ -16,15 +15,19 @@ class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private var textColor = R.color.white
+    private var bgColor = R.color.main_button_bg
+    private var circleColor = R.color.main_button_circle
+    private var labelTextSize = 40f
+
     private var widthSize = 0
     private var heightSize = 0
-
     private var progress = 0f
     private var sweepAngle = 0f
-
     private var buttonText = context.getString(R.string.button_download)
-
     private var valueAnimator = ValueAnimator()
+    private var overlayAlpha = 64
+    private var overlayAnimator: ValueAnimator? = null
 
     var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { _, _, new ->
         when (new) {
@@ -33,6 +36,7 @@ class LoadingButton @JvmOverloads constructor(
                 startAnimation()
                 startOverlayAnimation()
             }
+
             ButtonState.Completed -> {
                 buttonText = context.getString(R.string.button_download)
                 stopAnimation()
@@ -46,34 +50,40 @@ class LoadingButton @JvmOverloads constructor(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
-        textSize = 40f
+        textSize = labelTextSize
     }
 
-    private var overlayAlpha = 64
-
-    private var overlayAnimator: ValueAnimator? = null
-
-
     init {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.LoadingButton, 0, 0).apply {
+            try {
+
+                textColor = getResourceId(R.styleable.LoadingButton_buttonTextColor, textColor)
+                bgColor = getResourceId(R.styleable.LoadingButton_buttonBackgroundColor, bgColor)
+                circleColor =
+                    getResourceId(R.styleable.LoadingButton_progressCircleColor, circleColor)
+                labelTextSize =
+                    getDimension(R.styleable.LoadingButton_buttonTextSize, labelTextSize)
+            } finally {
+                recycle()
+            }
+        }
+
         isClickable = true
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        paint.color = ContextCompat.getColor(context, R.color.colorPrimary)
+        paint.color = ContextCompat.getColor(context, bgColor)
         canvas.drawRect(0f, 0f, widthSize.toFloat(), heightSize.toFloat(), paint)
 
-        paint.color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
-        canvas.drawRect(0f, 0f, widthSize * progress, heightSize.toFloat(), paint)
-
-        paint.color = ContextCompat.getColor(context, R.color.white)
+        paint.color = ContextCompat.getColor(context, textColor)
 
         paint.alpha = overlayAlpha
         canvas.drawRect(0f, 0f, widthSize * progress, heightSize.toFloat(), paint)
         paint.alpha = 255
 
-        paint.textSize = 40f
+        paint.textSize = labelTextSize
         paint.textAlign = Paint.Align.CENTER
 
         val centerY = (heightSize / 2 - (paint.descent() + paint.ascent()) / 2)

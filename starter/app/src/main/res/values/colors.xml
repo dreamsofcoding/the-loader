@@ -6,4 +6,9 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="grey">#808080</color>
+
+    <color name="main_button_bg">#015825</color>
+    <color name="main_button_text">#FFFFFF</color>
+    <color name="main_button_circle">#FCF44C</color>
+    <color name="detail_button_bg">#F9A825</color>
 </resources>

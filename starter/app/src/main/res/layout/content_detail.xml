@@ -80,7 +80,7 @@
         android:id="@+id/ok_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/detail_button_bg"
         android:text="@string/ok_button"
         android:textColor="@color/white"
         android:textSize="18sp"

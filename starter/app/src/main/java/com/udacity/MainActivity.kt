@@ -80,23 +80,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.mainContentLayout.customButton.setOnClickListener {
+        binding.mainContentLayout.customButton.apply {
+            setOnClickListener {
 
-            if (binding.mainContentLayout.radioCustom.isChecked) {
-                val inputUrl = binding.mainContentLayout.customUrlInput.text.toString().trim()
-                if (inputUrl.isEmpty() || !Patterns.WEB_URL.matcher(inputUrl).matches()) {
-                    Toast.makeText(this, "Please enter a valid URL", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
+                if (binding.mainContentLayout.radioCustom.isChecked) {
+                    val inputUrl = binding.mainContentLayout.customUrlInput.text.toString().trim()
+                    if (inputUrl.isEmpty() || !Patterns.WEB_URL.matcher(inputUrl).matches()) {
+                        Toast.makeText(this@MainActivity, "Please enter a valid URL", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    selectedUrl = inputUrl
+                    selectedRepoName = CUSTOM
                 }
-                selectedUrl = inputUrl
-                selectedRepoName = CUSTOM
-            }
 
-            if (selectedUrl == null) {
-                Toast.makeText(this, getString(R.string.select_option), Toast.LENGTH_SHORT).show()
-            } else {
-                binding.mainContentLayout.customButton.buttonState = ButtonState.Loading
-                download()
+                if (selectedUrl == null) {
+                    Toast.makeText(this@MainActivity, getString(R.string.select_option), Toast.LENGTH_SHORT).show()
+                } else {
+                    binding.mainContentLayout.customButton.apply {
+                        buttonState = ButtonState.Loading
+                    }
+                    download()
+                }
             }
         }
     }
@@ -176,7 +180,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateButtonOnDownloadComplete() {
         binding.mainContentLayout.customButton.animateToCompletion {
-            binding.mainContentLayout.customButton.buttonState = ButtonState.Completed
+            binding.mainContentLayout.customButton.apply {
+                buttonState = ButtonState.Completed
+            }
         }
     }
 }
